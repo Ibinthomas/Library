@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Document</title>
+    <style>
+                /* Custom CSS for additional styling */
+        .car-container {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .car-img {
+            border-radius: 8px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2.text-center {
+            font-size: 2rem;
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+
+        .text-muted {
+            color: #6c757d;
+        }
+
+        .btn {
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 50px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .text-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        .related-books-container {
+            overflow-x: auto;
+            max-width: 100%;
+            padding: 10px 0;
+        }
+        .related-books {
+            display: flex;
+            gap: 20px;
+            padding: 10px;
+            white-space: nowrap;
+        }
+        .book-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: center;
+            width: 200px;
+            flex-shrink: 0;
+        }
+        .book-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .book-card h3 {
+            font-size: 18px;
+            margin: 10px 0 5px;
+        }
+        .book-card p {
+            font-size: 14px;
+            color: #555;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .no-books {
+            font-size: 16px;
+            color: #777;
+            padding: 20px;
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">BookBUG</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../contact">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../../logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert 
+        {% if message.tags == 'success' %}alert-success 
+        {% elif message.tags == 'error' %}alert-danger 
+        {% endif %}
+        alert-dismissible fade show position-relative" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="container mt-5">
+        <div class="car-container bg-light p-4 shadow rounded">
+            <h2 class="text-center text-primary">{{ data.name }}</h2>
+            
+            <div class="text-center">
+                <img src="{{ data.image.url }}" alt="{{ data.name }}" class="car-img img-fluid" style="max-height: 300px;">
+            </div>
+    
+            <div class="mt-4">
+                <p><strong>Name:</strong> <span class="text-muted">{{ data.name }}</span></p>
+                <p><strong>Author:</strong> <span class="text-muted">{{ data.author }}</span></p>
+                <p><strong>Description:</strong> <span class="text-muted">{{ data.dis }}</span></p>
+                <p><strong>Publication Date:</strong> <span class="text-muted">{{ data.publication_date }}</span></p>
+                <!-- <p><strong>Price Per Day:</strong> ₹{{ data.price_per_day }}</p> -->
+                <p>
+                    <strong>Availability:</strong> 
+                    <span class="{% if data.available_copies %}text-success fw-bold{% else %}text-danger fw-bold{% endif %}">
+                        {% if data.available_copies %}Available{% else %}Not Available{% endif %}
+                    </span>
+                </p>
+            </div>
+    
+            <div class="text-center mt-4">
+                {% if user.is_authenticated %}
+                    <a href="../../book_issue/{{ data.id }}" class="btn btn-primary px-4 py-2 rounded-pill">
+                        Issue Book
+                    </a>
+                {% else %}
+                    <a href="../../login" class="btn btn-danger px-4 py-2 rounded-pill">Login to Issue Book</a>
+                {% endif %}
+                <!-- <a href="../../" class="btn btn-secondary px-4 py-2 rounded-pill">Back to Home</a> -->
+            </div>
+        </div>
+    </div>
+
+    <h2 style="text-align: center; margin-top: 30px;">Related Books</h2>
+    <div class="related-books-container ">
+        <div class="related-books">
+            {% for r in relate %}
+                <div class="book-card">
+                    <img src="{{ r.image.url }}" alt="{{ r.title }}">
+                    <h3>{{ r.title }}</h3>
+                    <p><strong></strong> {{ r.name }}</p>
+                    <a href="{% url 'view_book' r.id %}" class="btn">View Details</a>
+                </div>
+            {% empty %}
+                <p class="no-books">No related books found.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+
+
+
+
+
+    
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        &copy; 2025 BookBUG.
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
