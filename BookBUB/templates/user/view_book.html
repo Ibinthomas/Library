@@ -130,33 +130,50 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#">BookBUG</a>
+            <a class="navbar-brand" href="#">BookBUB</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../../">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../contact">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../../logout">Logout</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../user_home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../../logout">Logout</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="../profile">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg>
+                    </a></li>
+                {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert 
-        {% if message.tags == 'success' %}alert-success 
-        {% elif message.tags == 'error' %}alert-danger 
-        {% endif %}
-        alert-dismissible fade show position-relative" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
+
     <div class="container mt-5">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert 
+            {% if message.tags == 'success' %}alert-success 
+            {% elif message.tags == 'error' %}alert-danger 
+            {% endif %}
+            alert-dismissible fade show position-relative" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
         <div class="car-container bg-light p-4 shadow rounded">
             <h2 class="text-center text-primary">{{ data.name }}</h2>
             

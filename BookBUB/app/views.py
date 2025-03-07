@@ -194,6 +194,79 @@ def delete_book(req,id):
     data.delete()
     return redirect(admin_home)
 
+def mng_book(req):
+    rentals = Rental.objects.all().order_by("-id")
+    return render(req, "admin/mng_book.html", {"rentals": rentals})
+
+
+def update_rental_status(request, rental_id, status):
+    rental = get_object_or_404(Rental, id=rental_id)
+
+    if status in ["Approved", "Rejected", "Returned"]:
+        rental.status = status
+        rental.save()
+        
+        subject = ""
+        message = ""
+        recipient_email = rental.user.email
+        sender_email = settings.EMAIL_HOST_USER
+        
+        if status == "Approved":
+            subject = "Your Book Issue Request Has Been Approved!"
+            message = f"""
+            Hello {rental.user.username},
+
+            Your BookBUB request for '{rental.book.name}' has been approved.
+
+            Start Date: {rental.issue_date}
+            End Date: {rental.return_date}
+            Due Date: {rental.due_date}
+
+            Thank you for using our service!
+
+            Best Regards,
+            BookBUB Management Team
+            """
+        elif status == "Rejected":
+            subject = "Your Book Issue Request Has Been Rejected"
+            message = f"""
+            Hello {rental.user.username},
+
+            Sorry, your book rental request for '{rental.book.name}' has been rejected.
+
+            Start Date: {rental.issue_date}
+            End Date: {rental.return_date}
+            Due Date: {rental.due_date}
+
+            Thank you for using our service!
+
+            Best Regards,
+            Library Management Team
+            """
+        elif status == "Returned":
+            subject = "Your Book Has Been Returned Successfully!"
+            message = f"""
+            Hello {rental.user.username},
+
+            Your book '{rental.book.name}' has been successfully returned.
+
+            Start Date: {rental.issue_date}
+            End Date: {rental.return_date}
+            Due Date: {rental.due_date}
+
+            Thank you for using our service!
+
+            Best Regards,
+            BookBUB Management Team
+            """
+        
+        send_mail(subject, message, sender_email, [recipient_email])
+        messages.success(request, f"Rental status updated to {status}")
+    else:
+        messages.error(request, "Invalid status update")
+    
+    return redirect("mng_book")
+
 # _______________________________User_________________________________
 
 def user_home(req):
@@ -203,6 +276,37 @@ def user_home(req):
         data=Book.objects.all()
         cat=Category.objects.all()
         return render(req,'user/user_home.html',{'data':data,'cat':cat})
+    
+
+def about(req):
+    cat=Category.objects.all()
+    return render(req,'user/about.html',{"cat":cat})
+
+def search_books(request):
+    cat=Category.objects.all()
+    query = request.GET.get('q')
+    books = Book.objects.filter(name__icontains=query) if query else []
+    return render(request, 'user/search.html', {'books': books, 'query': query, 'cat':cat})
+
+
+def contact(req):
+    cat=Category.objects.all()
+    if req.method == "POST":
+        name = req.POST["name"]
+        email = req.POST["email"]
+        message = req.POST["message"]
+
+        send_mail(
+            subject=f"New Contact Form Submission from {name}",
+            message=f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}",
+            from_email=email,
+            recipient_list=["shozo1310@gmail.com"], 
+            fail_silently=True,
+        )
+
+        messages.success(req, "Your message has been sent successfully!")
+        return redirect(contact )  
+    return render(req,'user/contact.html',{"cat":cat})
 
 def view_book(req,id):
     data=Book.objects.get(pk=id)
@@ -250,7 +354,7 @@ def book_issue(req, id):
 
             if existing_rental:
                 messages.error(req, "This book is already booked for the selected dates.")
-                return redirect('book_issue', id=book.pk)
+                return redirect('view_book', id=book.pk)
 
             num_days = (return_date - issue_date).days
             rental = Rental.objects.create(

@@ -19,41 +19,35 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark " style="background-color: black;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="../">BookBUB</a>
+            <a class="navbar-brand" href="#">BookBUB</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="../">Home</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link " href="#" role="button" data-bs-toggle="dropdown">Categories</a>
-                        <ul class="dropdown-menu">
-                            {% for i in cat %}
-                            <li><a class="dropdown-item " href="../view_category/{{ i.pk }}">{{i.category}}</a></li>
-                            {% endfor %}
-                        </ul>
-                      </li> 
-                    <li class="nav-item"><a class="nav-link" href="../about">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../contact">Contact</a></li>
-                    
-                    {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="../logout">Logout</a></li>
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="../login">Login</a></li>
-                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="../user_home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../about">About</a>
+                    </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../logout">Logout</a>
+                    </li>
                     {% if user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="profile">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-                            </svg>
-                        </a></li>
-                    {% endif %}
-                    
+                    <li class="nav-item"><a class="nav-link" href="../profile">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+                        </svg>
+                    </a></li>
+                {% endif %}
                 </ul>
             </div>
         </div>
@@ -61,7 +55,7 @@
      
 
     {% block content %}
-    <div class="container mt-5" >
+    <div class="container mt-5" style="padding-top: 5px;" >
         <h2 class="mt-5 mb-4">Hey {{ user.first_name }}</h2>
         {% if messages %}
         {% for message in messages %}
@@ -118,8 +112,8 @@
                     <div class="col-md-7">
                         <div class="card-body">
                             <h5 class="card-title">{{ rental.book.name }}</h5>
-                            <p class="card-text"><strong>Start Date:</strong> {{ rental.issue_date }}</p>
-                            <p class="card-text"><strong>End Date:</strong> {{ rental.return_date }}</p>
+                            <p class="card-text"><strong>Issue Date:</strong> {{ rental.issue_date }}</p>
+                            <p class="card-text"><strong>Return Date:</strong> {{ rental.return_date }}</p>
                             <p class="card-text"><strong>Due Date:</strong> {{ rental.due_date }}</p>
 
                         </div>
@@ -131,11 +125,10 @@
                                 <span class="badge bg-warning text-dark">Pending</span>
                             {% elif rental.status == "Approved" %}
                                 <span class="badge bg-success">Approved</span>
-                                <a href="{% url 'payment' rental.id %}" class="btn btn-success mt-2">Payment</a>
                             {% elif rental.status == "Rejected" %}
                                 <span class="badge bg-danger">Rejected</span>
-                            {% elif rental.status == "Completed" %}
-                                <span class="badge bg-primary">Completed</span>
+                            {% elif rental.status == "Returned" %}
+                                <span class="badge bg-primary">Returned</span>
                             {% endif %}
                         </p>
                     </div>
